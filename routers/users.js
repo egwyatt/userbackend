@@ -36,38 +36,20 @@ router.post("/", async (req, res) => {       // localhost:5000/users [POST}]
  * INSERT (POST) INDIVIDUAL
  *************************************************************************/
 router.post("/register", async (req, res) => {       // localhost:5000/users/register [POST}]
-  try {
-      const {uname} = req.body;
-      const {pword} = req.body;
-      console.log(`uname=${uname}, pword=${pword}`)
+  const userName = req.body.userName; 
+  const password = req.body.password; 
+  const confirmPassword = req.body.confirmPassword; 
+  connection.query("INSERT INTO users (UNAME, PWORD) VALUES (?, ?)", [userName, password], 
+      (err, result) => {
+         console.log(err);
+          if(result){
+              res.send(result); 
+          } else {
+              res.send({message: "Enter Requested Data"})
+          }
+      }
+  )
+});
 
-      const data =  await connection.promise().query(
-        `INSERT INTO users VALUES (?,?)`,[uname,pword]
-      );
-      console.log(`data[0]=${JSON.stringify(data[0])}`)
-      res.status(202).json({  // res.send(data)
-        users: data[0]
-      });
-    } catch (err) {
-      res.status(500).json({
-        message: err
-      });
-    }
-});
-/*************************************************************************
- * GET CATEGORIES AND QUESTIONS
- *************************************************************************/
-router.get("/categories", async (req, res) => { // localhost:5000/users/categories [GET]
-  try {
-    const data = await connection.promise().query(
-      `SELECT * FROM categories;`
-    );
-    res.status(200).json({ categories: data[0] });
-  } catch (err) {
-    res.status(500).json({
-      message: err
-    });
-  }
-});
 
 export default router;
